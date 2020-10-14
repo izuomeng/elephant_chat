@@ -1,6 +1,6 @@
 import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/common/utils.dart';
-import 'package:elephant_chat/widgets/animate_icon_color.dart';
+import 'package:elephant_chat/widgets/animated_color_icon.dart';
 import 'package:flutter/material.dart';
 
 class FancyTabBar extends StatefulWidget {
@@ -39,6 +39,8 @@ class _FancyTabBarState extends State<FancyTabBar> {
   }
 
   List<Widget> _renderTabItems() {
+    const duration = Duration(milliseconds: 150);
+
     return EleUtils.jsMap<TabItem, Widget>(widget.tablist)
         .map((item, index) => Expanded(
             flex: 1,
@@ -52,19 +54,25 @@ class _FancyTabBarState extends State<FancyTabBar> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  AnimateIconColor(
+                  AnimatedColorIcon(
                     icon: item.icon,
                     color:
                         currentTab == index ? primaryColor : Color(0xffC4C7CD),
+                    duration: duration,
+                    size: 20,
                   ),
                   SizedBox(height: 8),
                   AnimatedDefaultTextStyle(
-                      child: Text(item.title),
+                      child: Text(
+                        item.title,
+                        style: TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
                       style: TextStyle(
                           color: currentTab == index
                               ? primaryColor
                               : Color(0xffCED0D4)),
-                      duration: Duration(milliseconds: 150))
+                      duration: duration)
                 ],
               ),
             )));

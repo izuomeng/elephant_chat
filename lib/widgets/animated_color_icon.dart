@@ -1,13 +1,17 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
-class AnimateIconColor extends ImplicitlyAnimatedWidget {
+class AnimatedColorIcon extends ImplicitlyAnimatedWidget {
   final Color color;
   final IconData icon;
+  final double size;
 
-  AnimateIconColor(
+  AnimatedColorIcon(
       {Key key,
       @required this.color,
       @required this.icon,
+      this.size,
       Curve curve = Curves.easeInOut,
       Duration duration = const Duration(milliseconds: 150)})
       : super(key: key, duration: duration, curve: curve);
@@ -16,12 +20,17 @@ class AnimateIconColor extends ImplicitlyAnimatedWidget {
   _AnimateIconColorState createState() => _AnimateIconColorState();
 }
 
-class _AnimateIconColorState extends AnimatedWidgetBaseState<AnimateIconColor> {
+class _AnimateIconColorState
+    extends AnimatedWidgetBaseState<AnimatedColorIcon> {
   ColorTween _color;
 
   @override
   Widget build(BuildContext context) {
-    return Icon(widget.icon, color: _color.evaluate(animation));
+    return Icon(
+      widget.icon,
+      color: _color.evaluate(animation),
+      size: widget.size,
+    );
   }
 
   @override
