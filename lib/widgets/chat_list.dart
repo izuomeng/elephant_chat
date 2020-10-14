@@ -1,4 +1,3 @@
-import 'package:elephant_chat/common/consts.dart';
 import 'package:flutter/material.dart';
 
 class ChatList extends StatefulWidget {
@@ -42,24 +41,30 @@ class _ChatListState extends State<ChatList> {
           ),
         ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-            ),
-            FlatButton(
-              child: Text('Add'),
-              onPressed: _incrementCounter,
-              color: primaryColor,
-            )
-          ],
+      body: DecoratedBox(
+        decoration: BoxDecoration(color: Color(0xffFCFCFC)),
+        child: Center(
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'You have pushed the button this many times:',
+              ),
+              Text(
+                '$_counter',
+              ),
+              FlatButton(
+                child: Text(
+                  'Add',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: _incrementCounter,
+                color: Theme.of(context).primaryColor,
+              )
+            ],
+          ),
         ),
       ),
     );

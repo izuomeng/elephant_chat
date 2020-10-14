@@ -1,5 +1,6 @@
 import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/common/utils.dart';
+import 'package:elephant_chat/widgets/animate_icon_color.dart';
 import 'package:flutter/material.dart';
 
 class FancyTabBar extends StatefulWidget {
@@ -19,15 +20,18 @@ class _FancyTabBarState extends State<FancyTabBar> {
     return DecoratedBox(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+              topLeft: Radius.circular(24), topRight: Radius.circular(24)),
           color: Color.fromRGBO(255, 255, 255, 1),
           boxShadow: <BoxShadow>[
-            BoxShadow(color: Color.fromRGBO(255, 255, 255, 0.2), blurRadius: 10)
+            BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.05), blurRadius: 20)
           ]),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.only(
+          bottom: 32.0,
+          top: 16.0,
+        ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: _renderTabItems(),
         ),
       ),
@@ -36,41 +40,40 @@ class _FancyTabBarState extends State<FancyTabBar> {
 
   List<Widget> _renderTabItems() {
     return EleUtils.jsMap<TabItem, Widget>(widget.tablist)
-        .map((item, index) => InkWell(
-              splashColor: Color.fromRGBO(0, 0, 0, 0.1),
+        .map((item, index) => Expanded(
+            flex: 1,
+            child: GestureDetector(
               onTap: () {
                 setState(() {
                   currentTab = index;
                 });
               },
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    Icon(
-                      item.icon,
-                      color: currentTab == index
-                          ? primaryColor
-                          : Color(0xffC4C7CD),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      item.title,
+              behavior: HitTestBehavior.opaque,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  AnimateIconColor(
+                    icon: item.icon,
+                    color:
+                        currentTab == index ? primaryColor : Color(0xffC4C7CD),
+                  ),
+                  SizedBox(height: 8),
+                  AnimatedDefaultTextStyle(
+                      child: Text(item.title),
                       style: TextStyle(
                           color: currentTab == index
                               ? primaryColor
                               : Color(0xffCED0D4)),
-                    )
-                  ],
-                ),
+                      duration: Duration(milliseconds: 150))
+                ],
               ),
-            ));
+            )));
   }
 }
 
 class TabItem {
   String title;
   IconData icon;
-  Color color;
 
-  TabItem({@required this.icon, @required this.title, @required this.color});
+  TabItem({@required this.icon, @required this.title});
 }
