@@ -12,9 +12,8 @@ class AnimatedColorIcon extends ImplicitlyAnimatedWidget {
       @required this.color,
       @required this.icon,
       this.size,
-      Curve curve = Curves.easeInOut,
       Duration duration = const Duration(milliseconds: 150)})
-      : super(key: key, duration: duration, curve: curve);
+      : super(key: key, duration: duration, curve: Curves.easeInOut);
 
   @override
   _AnimateIconColorState createState() => _AnimateIconColorState();

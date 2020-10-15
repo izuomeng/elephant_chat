@@ -1,19 +1,28 @@
 import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/common/utils.dart';
+import 'package:elephant_chat/entities/tab_item.dart';
 import 'package:elephant_chat/widgets/animated_color_icon.dart';
 import 'package:flutter/material.dart';
 
 class FancyTabBar extends StatefulWidget {
   final List<TabItem> tablist;
+  final void Function(int) onTap;
+  final int defaultActiveTab;
 
-  FancyTabBar({@required this.tablist});
+  FancyTabBar({@required this.tablist, this.onTap, this.defaultActiveTab = 0});
 
   @override
   _FancyTabBarState createState() => _FancyTabBarState();
 }
 
 class _FancyTabBarState extends State<FancyTabBar> {
-  int currentTab = 0;
+  int currentTab;
+
+  @override
+  void initState() {
+    super.initState();
+    currentTab = widget.defaultActiveTab;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +57,9 @@ class _FancyTabBarState extends State<FancyTabBar> {
               onTap: () {
                 setState(() {
                   currentTab = index;
+                  if (widget.onTap is Function) {
+                    widget.onTap(index);
+                  }
                 });
               },
               behavior: HitTestBehavior.opaque,
@@ -77,11 +89,4 @@ class _FancyTabBarState extends State<FancyTabBar> {
               ),
             )));
   }
-}
-
-class TabItem {
-  String title;
-  IconData icon;
-
-  TabItem({@required this.icon, @required this.title});
 }

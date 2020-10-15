@@ -1,3 +1,5 @@
+import 'package:elephant_chat/common/consts.dart';
+import 'package:elephant_chat/entities/chat_sessions.dart';
 import 'package:flutter/material.dart';
 
 class ChatList extends StatefulWidget {
@@ -6,31 +8,31 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  List<ChatSessions> _chatList = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'ELephantChat',
-          style: TextStyle(fontSize: 20),
+      appBar: _buildAppBar(),
+      body: _buildAppBody(),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+        leading: Icon(
+          Icons.notifications_outlined,
+          color: Colors.black87,
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.person,
-              size: 24,
-              color: Colors.black87,
-            ),
-            onPressed: null,
+        title: CircleAvatar(
+          radius: 18,
+          backgroundImage: NetworkImage(
+            'https://img.alicdn.com/tfs/TB1S7v7Y4v1gK0jSZFFXXb0sXXa-190-183.jpg',
           ),
+        ),
+        centerTitle: true,
+        backgroundColor: bodyBg,
+        actions: <Widget>[
           IconButton(
             icon: Icon(
               Icons.add,
@@ -40,33 +42,27 @@ class _ChatListState extends State<ChatList> {
             onPressed: null,
           ),
         ],
-      ),
-      body: DecoratedBox(
-        decoration: BoxDecoration(color: Color(0xffFCFCFC)),
-        child: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'You have pushed the button this many times:',
+        elevation: 0);
+  }
+
+  Widget _buildAppBody() {
+    return ListView.builder(
+        itemCount: _chatList.length,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              child: Text(
+                'Chats',
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-              Text(
-                '$_counter',
-              ),
-              FlatButton(
-                child: Text(
-                  'Add',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: _incrementCounter,
-                color: Theme.of(context).primaryColor,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+              padding: EdgeInsets.all(20),
+            );
+          }
+          return Text(index.toString());
+        });
+  }
+
+  void _fetchChatList() {
+    // url: https://mocks.alibaba-inc.com/mock/daxiang-test/chat/sessions
   }
 }
