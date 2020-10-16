@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'chat_message.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class ChatMessage {
   // 1:纯文本 2:图片
   final int type;
@@ -24,4 +28,8 @@ class ChatMessage {
       @required this.haveRead,
       this.text,
       this.image});
+
+  factory ChatMessage.fromJson(Map<String, dynamic> json) =>
+      _$ChatMessageFromJson(json);
+  Map<String, dynamic> toJson() => _$ChatMessageToJson(this);
 }

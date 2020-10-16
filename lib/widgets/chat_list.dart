@@ -1,5 +1,9 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:elephant_chat/common/consts.dart';
-import 'package:elephant_chat/entities/chat_sessions.dart';
+import 'package:elephant_chat/common/request.dart';
+import 'package:elephant_chat/entities/chat_session.dart';
 import 'package:flutter/material.dart';
 
 class ChatList extends StatefulWidget {
@@ -8,7 +12,13 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
-  List<ChatSessions> _chatList = [];
+  List<ChatSession> _chatList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchChatList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +68,69 @@ class _ChatListState extends State<ChatList> {
               padding: EdgeInsets.all(20),
             );
           }
-          return Text(index.toString());
+
+          ChatSession chatSession = _chatList[index];
+          int unreadMessageCnt = chatSession.messages
+              .where((element) => element.haveRead == 'n')
+              .length;
+
+          return Container(
+            margin: EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              title: Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: Text(
+                  chatSession.userName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              subtitle: Container(
+                margin: EdgeInsets.only(top: 4),
+                child: Text(
+                  chatSession.messages?.last?.text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              contentPadding: EdgeInsets.only(left: 12, right: 12),
+              leading: CircleAvatar(
+                radius: 32,
+                backgroundImage: NetworkImage(chatSession.userAvatar),
+              ),
+              trailing: unreadMessageCnt > 0
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xffFF6766),
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      width: 20,
+                      height: 20,
+                      alignment: Alignment.center,
+                      child: Text(
+                        unreadMessageCnt.toString(),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    )
+                  : null,
+            ),
+          );
         });
   }
 
-  void _fetchChatList() {
+  void _fetchChatList() async {
     // url: https://mocks.alibaba-inc.com/mock/daxiang-test/chat/sessions
+    Response response = await request.get('/chat/sessions');
+    List chatSessionMaps = response.data ?? [];
+    List<ChatSession> chatList = [null]; // 加一个占位符，渲染标题
+
+    for (var chatSessionMap in chatSessionMaps) {
+      chatList.add(ChatSession.fromJson(chatSessionMap));
+    }
+
+    setState(() {
+      _chatList = chatList;
+    });
   }
 }
