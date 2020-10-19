@@ -1,10 +1,16 @@
+import 'dart:async';
 import 'dart:developer';
-
-import 'package:dio/dio.dart';
+import 'dart:math';
+import 'dart:ui';
+import 'package:elephant_chat/common/chat_client.dart';
 import 'package:elephant_chat/common/consts.dart';
-import 'package:elephant_chat/common/request.dart';
+import 'package:elephant_chat/entities/chat_message.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
+import 'package:elephant_chat/entities/user.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
+
+import 'package:provider/provider.dart';
 
 class ChatList extends StatefulWidget {
   @override
@@ -17,7 +23,9 @@ class _ChatListState extends State<ChatList> {
   @override
   void initState() {
     super.initState();
-    _fetchChatList();
+    Timer.run(() {
+      _fetchChatList(context);
+    });
   }
 
   @override
@@ -70,29 +78,44 @@ class _ChatListState extends State<ChatList> {
           }
 
           ChatSession chatSession = _chatList[index];
-          int unreadMessageCnt = chatSession.messages
-              .where((element) => element.haveRead == 'n')
-              .length;
+          int unreadMessageCnt = chatSession.unreadCnt;
+          double sreenWidth = MediaQuery.of(context).size.width;
+          double maxSubtitleWidth =
+              unreadMessageCnt > 0 ? sreenWidth - 216 : sreenWidth - 180;
 
           return Container(
             margin: EdgeInsets.only(bottom: 12),
             child: ListTile(
               title: Padding(
-                padding: EdgeInsets.only(top: 12),
+                padding: EdgeInsets.only(top: 8),
                 child: Text(
                   chatSession.userName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               subtitle: Container(
                 margin: EdgeInsets.only(top: 4),
-                child: Text(
-                  chatSession.messages?.last?.text,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: DefaultTextStyle(
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black.withOpacity(0.8)),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                        constraints: BoxConstraints(maxWidth: maxSubtitleWidth),
+                        child: Text(chatSession.lastMessageContent,
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                      ),
+                      Text(
+                        ' · ',
+                        style: TextStyle(fontSize: 20, color: Colors.black45),
+                      ),
+                      Text(
+                        '5:46 PM',
+                        style: TextStyle(fontSize: 12, color: Colors.black45),
+                      )
+                    ])),
               ),
               contentPadding: EdgeInsets.only(left: 12, right: 12),
               leading: CircleAvatar(
@@ -110,7 +133,10 @@ class _ChatListState extends State<ChatList> {
                       alignment: Alignment.center,
                       child: Text(
                         unreadMessageCnt.toString(),
-                        style: TextStyle(color: Colors.white, fontSize: 12),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold),
                       ),
                     )
                   : null,
@@ -119,16 +145,11 @@ class _ChatListState extends State<ChatList> {
         });
   }
 
-  void _fetchChatList() async {
-    // url: https://mocks.alibaba-inc.com/mock/daxiang-test/chat/sessions
-    Response response = await request.get('/chat/sessions');
-    List chatSessionMaps = response.data ?? [];
-    List<ChatSession> chatList = [null]; // 加一个占位符，渲染标题
-
-    for (var chatSessionMap in chatSessionMaps) {
-      chatList.add(ChatSession.fromJson(chatSessionMap));
-    }
-
+  void _fetchChatList(BuildContext context) async {
+    // chatClient.insertMockData();
+    LoginUserNotifier loginUser = context.read<LoginUserNotifier>();
+    List<ChatSession> chatList =
+        await chatClient.getConversationList(loginUser.id); // 加一个占位符，渲染标题
     setState(() {
       _chatList = chatList;
     });

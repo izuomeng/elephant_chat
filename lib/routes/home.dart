@@ -1,23 +1,36 @@
 import 'package:elephant_chat/entities/tab_item.dart';
+import 'package:elephant_chat/routes/database_ui.dart';
 import 'package:elephant_chat/widgets/chat_list.dart';
 import 'package:elephant_chat/widgets/fancy_tab_bar.dart';
 import 'package:flutter/material.dart';
 
-class MyHomePage extends StatelessWidget {
+class Home extends StatefulWidget {
   final List<TabItem> tabList = [
     TabItem(icon: Icons.person_outline, title: 'Contacts'),
     TabItem(icon: Icons.chat_bubble_outline, title: 'Chats'),
     TabItem(icon: Icons.settings_outlined, title: 'Settings'),
+    TabItem(icon: Icons.data_usage_outlined, title: 'DB'),
   ];
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int _currentTab = 1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: FancyTabBar(
-        tablist: tabList,
-        defaultActiveTab: 1,
-      ),
-      body: ChatList(),
+          tablist: widget.tabList,
+          defaultActiveTab: _currentTab,
+          onTap: (tab) {
+            setState(() {
+              _currentTab = tab;
+            });
+          }),
+      body: _currentTab != 3 ? ChatList() : DataBaseUI(),
     );
   }
 }

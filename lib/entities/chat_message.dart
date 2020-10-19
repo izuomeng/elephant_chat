@@ -1,3 +1,4 @@
+import 'package:elephant_chat/entities/user.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -5,6 +6,7 @@ part 'chat_message.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class ChatMessage {
+  final String id;
   // 1:纯文本 2:图片
   final int type;
   // 不支持富文本，emoji也属于纯文本
@@ -12,7 +14,7 @@ class ChatMessage {
   // 一条消息只能有一张图片
   final String image;
   // 发送人
-  final String senderId;
+  final User sender;
   // 接收人
   final String receiverId;
   // 发送时间
@@ -21,8 +23,9 @@ class ChatMessage {
   final String haveRead;
 
   ChatMessage(
-      {@required this.type,
-      @required this.senderId,
+      {@required this.id,
+      @required this.type,
+      @required this.sender,
       @required this.receiverId,
       @required this.time,
       @required this.haveRead,
