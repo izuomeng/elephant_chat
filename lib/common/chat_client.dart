@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:math';
 import 'package:elephant_chat/entities/chat_message.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
+import 'package:elephant_chat/entities/socket_message.dart';
 import 'package:elephant_chat/entities/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sqflite_manager/flutter_sqflite_manager.dart';
@@ -12,7 +13,33 @@ import 'package:web_socket_channel/io.dart';
 
 class ChatClient {
   Database _db;
-  final channel = IOWebSocketChannel.connect('ws://localhost:3001');
+  IOWebSocketChannel _channel;
+  final List<void Function(ChatMessage)> _messageEventHooks = [];
+
+  ChatClient() {
+    _channel = IOWebSocketChannel.connect('ws://localhost:3001?uid=klmklm');
+    _channel.stream.listen((message) {
+      Map<String, dynamic> map = json.decode(message);
+      SocketMessage socketMessage = SocketMessage.fromJson(map);
+      if (socketMessage.type == 101) {
+        ChatMessage chatMessage = ChatMessage.fromJson(socketMessage.content);
+        chatClient.insertMessage(chatMessage);
+        _messageEventHooks.forEach((hook) {
+          hook(chatMessage);
+        });
+      }
+    });
+  }
+
+  void registerMessageHook(void Function(ChatMessage) hook) {
+    _messageEventHooks.add(hook);
+  }
+
+  void sendMessage(ChatMessage message) {
+    // ws.send('{"type":100,"content":{"id":"788hjsa07j9","type":1,"text":"I miss you","receiverId":"klmklm","time":1603159279916,"haveRead":"n","sender":{"id":"2i2a6451agh","avatar":"https://img.alicdn.com/tfs/TB1I0J2ZbY1gK0jSZTEXXXDQVXa-661-647.jpg","name":"克拉默卡拉曼"}}}');
+    String messageJson = json.encode(message);
+    _channel.sink.add(messageJson);
+  }
 
   Future<Database> _getDb() async {
     if (_db is Database) {

@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:math';
 import 'dart:ui';
+import 'dart:convert';
 import 'package:elephant_chat/common/chat_client.dart';
 import 'package:elephant_chat/common/consts.dart';
-import 'package:elephant_chat/entities/chat_message.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
 import 'package:elephant_chat/entities/user.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as developer;
 
 import 'package:provider/provider.dart';
 
@@ -23,8 +21,12 @@ class _ChatListState extends State<ChatList> {
   @override
   void initState() {
     super.initState();
+
     Timer.run(() {
       _fetchChatList(context);
+      chatClient.registerMessageHook((message) {
+        _fetchChatList(context);
+      });
     });
   }
 
@@ -148,10 +150,11 @@ class _ChatListState extends State<ChatList> {
   void _fetchChatList(BuildContext context) async {
     // chatClient.insertMockData();
     LoginUserNotifier loginUser = context.read<LoginUserNotifier>();
+
     List<ChatSession> chatList =
         await chatClient.getConversationList(loginUser.id); // 加一个占位符，渲染标题
     setState(() {
-      _chatList = chatList;
+      _chatList = [null, ...chatList];
     });
   }
 }
