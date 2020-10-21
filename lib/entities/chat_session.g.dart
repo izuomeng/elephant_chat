@@ -13,6 +13,7 @@ ChatSession _$ChatSessionFromJson(Map<String, dynamic> json) {
     userAvatar: json['userAvatar'] as String,
     lastMessageType: json['lastMessageType'] as int,
     lastMessageContent: json['lastMessageContent'] as String,
+    lastMessageTime: json['lastMessageTime'] as int,
     unreadCnt: json['unreadCnt'] as int,
   );
 }
@@ -24,5 +25,6 @@ Map<String, dynamic> _$ChatSessionToJson(ChatSession instance) =>
       'userAvatar': instance.userAvatar,
       'lastMessageType': instance.lastMessageType,
       'lastMessageContent': instance.lastMessageContent,
+      'lastMessageTime': instance.lastMessageTime,
       'unreadCnt': instance.unreadCnt,
     };

@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         },
         child: MaterialApp(
           title: 'ElephantChat',
-          theme: ThemeData(primaryColor: primaryColor),
+          theme: ThemeData(primaryColor: primaryColor, backgroundColor: bodyBg),
           home: Home(),
         ));
   }

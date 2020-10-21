@@ -1,16 +1,17 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:ui';
-import 'dart:convert';
 import 'package:elephant_chat/common/chat_client.dart';
-import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
 import 'package:elephant_chat/entities/user.dart';
+import 'package:elephant_chat/routes/chat.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
 class ChatList extends StatefulWidget {
+  ChatList({Key key}) : super(key: key);
+
   @override
   _ChatListState createState() => _ChatListState();
 }
@@ -51,7 +52,7 @@ class _ChatListState extends State<ChatList> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: bodyBg,
+        backgroundColor: Theme.of(context).backgroundColor,
         actions: <Widget>[
           IconButton(
             icon: Icon(
@@ -88,6 +89,8 @@ class _ChatListState extends State<ChatList> {
           return Container(
             margin: EdgeInsets.only(bottom: 12),
             child: ListTile(
+              key: Key(chatSession.id),
+              onTap: () => _handleClickListItem(chatSession),
               title: Padding(
                 padding: EdgeInsets.only(top: 8),
                 child: Text(
@@ -156,5 +159,19 @@ class _ChatListState extends State<ChatList> {
     setState(() {
       _chatList = [null, ...chatList];
     });
+  }
+
+  void _handleClickListItem(ChatSession chatSession) {
+    String lastMessageTime = DateFormat('MM-dd HH:mm').format(
+        DateTime.fromMillisecondsSinceEpoch(chatSession.lastMessageTime));
+    ChatPage chatPage = ChatPage(
+      chatTitle: chatSession.userName,
+      chatAvatar: chatSession.userAvatar,
+      chatId: chatSession.id,
+      chatSubTitle: 'Last Seen $lastMessageTime',
+    );
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => chatPage));
   }
 }

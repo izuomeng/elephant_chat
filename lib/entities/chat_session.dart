@@ -10,6 +10,7 @@ class ChatSession {
   final String userAvatar;
   final int lastMessageType; // 1:文本 2:图片
   final String lastMessageContent;
+  final int lastMessageTime;
   final int unreadCnt;
 
   ChatSession(
@@ -18,6 +19,7 @@ class ChatSession {
       @required this.userAvatar,
       @required this.lastMessageType,
       @required this.lastMessageContent,
+      @required this.lastMessageTime,
       @required this.unreadCnt});
 
   factory ChatSession.fromJson(Map<String, dynamic> json) =>

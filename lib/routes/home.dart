@@ -30,7 +30,10 @@ class _HomeState extends State<Home> {
               _currentTab = tab;
             });
           }),
-      body: _currentTab != 3 ? ChatList() : DataBaseUI(),
+      body: IndexedStack(
+        children: [ChatList(), ChatList(), ChatList(), DataBaseUI()],
+        index: _currentTab,
+      ),
     );
   }
 }

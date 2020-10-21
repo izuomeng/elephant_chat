@@ -84,15 +84,13 @@ class ChatClient {
   }
 
   Future<void> insertMockData() async {
-    String genId() => int.parse(Random().nextDouble().toString().substring(2))
-        .toRadixString(35);
-    List.generate(10, (index) => genId()).forEach((id) {
+    List.generate(10, (index) => index).forEach((id) {
       insertMessage(ChatMessage(
-          id: id,
+          id: id.toString(),
           type: 1,
           text: "I miss you so much",
           sender: User(
-              id: genId(),
+              id: 'user$id',
               avatar:
                   'https://img.alicdn.com/tfs/TB1U0jFmCR26e4jSZFEXXbwuXXa-320-319.jpg',
               name: 'XXX'),
@@ -129,6 +127,7 @@ class ChatClient {
           userAvatar: sender.avatar,
           lastMessageType: newestMessage.type,
           lastMessageContent: newestMessage.text,
+          lastMessageTime: newestMessage.time,
           unreadCnt: unreadCnt));
     });
 

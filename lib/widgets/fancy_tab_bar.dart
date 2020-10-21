@@ -1,4 +1,3 @@
-import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/entities/tab_item.dart';
 import 'package:elephant_chat/widgets/animated_color_icon.dart';
@@ -41,14 +40,15 @@ class _FancyTabBarState extends State<FancyTabBar> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: _renderTabItems(),
+          children: _renderTabItems(context),
         ),
       ),
     );
   }
 
-  List<Widget> _renderTabItems() {
+  List<Widget> _renderTabItems(BuildContext context) {
     const duration = Duration(milliseconds: 150);
+    Color primaryColor = Theme.of(context).primaryColor;
 
     return EleUtils.jsMap<TabItem, Widget>(widget.tablist)
         .map((item, index) => Expanded(

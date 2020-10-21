@@ -1,7 +1,13 @@
+import 'dart:math';
+
 class EleUtils {
   static ListMap jsMap<T, P>(List<T> list) {
     return ListMap<T, P>(list);
   }
+
+  static String generateId() =>
+      int.parse(Random().nextDouble().toString().substring(2))
+          .toRadixString(36);
 }
 
 class ListMap<T, P> {
