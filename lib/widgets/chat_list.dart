@@ -162,7 +162,7 @@ class _ChatListState extends State<ChatList> {
   }
 
   void _handleClickListItem(ChatSession chatSession) {
-    String lastMessageTime = DateFormat('MM-dd HH:mm').format(
+    String lastMessageTime = DateFormat('HH:mm').format(
         DateTime.fromMillisecondsSinceEpoch(chatSession.lastMessageTime));
     ChatPage chatPage = ChatPage(
       chatTitle: chatSession.userName,

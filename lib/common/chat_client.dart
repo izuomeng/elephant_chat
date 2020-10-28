@@ -17,13 +17,13 @@ class ChatClient {
   final List<void Function(ChatMessage)> _messageEventHooks = [];
 
   ChatClient() {
-    _channel = IOWebSocketChannel.connect('ws://localhost:3001?uid=klmklm');
-    _channel.stream.listen((message) {
+    _channel = IOWebSocketChannel.connect('ws://localhost:3001?uid=klmklm2');
+    _channel.stream.listen((message) async {
       Map<String, dynamic> map = json.decode(message);
       SocketMessage socketMessage = SocketMessage.fromJson(map);
       if (socketMessage.type == 101) {
         ChatMessage chatMessage = ChatMessage.fromJson(socketMessage.content);
-        chatClient.insertMessage(chatMessage);
+        await chatClient.insertMessage(chatMessage);
         _messageEventHooks.forEach((hook) {
           hook(chatMessage);
         });
@@ -35,7 +35,11 @@ class ChatClient {
     _messageEventHooks.add(hook);
   }
 
-  void sendMessage(ChatMessage message) {
+  void unregisterMessageHook(void Function(ChatMessage) hook) {
+    _messageEventHooks.retainWhere((item) => item != hook);
+  }
+
+  void sendMessage(SocketMessage message) {
     // ws.send('{"type":100,"content":{"id":"788hjsa07j9","type":1,"text":"I miss you","receiverId":"klmklm","time":1603159279916,"haveRead":"n","sender":{"id":"2i2a6451agh","avatar":"https://img.alicdn.com/tfs/TB1I0J2ZbY1gK0jSZTEXXXDQVXa-661-647.jpg","name":"克拉默卡拉曼"}}}');
     String messageJson = json.encode(message);
     _channel.sink.add(messageJson);
@@ -70,14 +74,44 @@ class ChatClient {
     );
   }
 
-  Future<List<ChatMessage>> getMessages({String receiverId}) async {
+  Future<List<ChatMessage>> getMessages(
+      {String receiverId, String senderId}) async {
     Database _database = await _getDb();
-    final List<Map<String, dynamic>> maps = await _database
-        .query('messages', where: 'receiverId = ?', whereArgs: [receiverId]);
+    String where;
+    List<String> whereArgs;
+
+    if ((receiverId is String) && (senderId is String)) {
+      where = 'receiverId = ? and sender like ?';
+      whereArgs = [receiverId, '%"id":"$senderId"%'];
+    } else if (receiverId is String) {
+      where = 'receiverId = ?';
+      whereArgs = [receiverId];
+    } else if (senderId is String) {
+      where = 'sender like ?';
+      whereArgs = ['%"id":"$senderId"%'];
+    } else {
+      where = '';
+      whereArgs = [];
+    }
+
+    final List<Map<String, dynamic>> maps =
+        await _database.query('messages', where: where, whereArgs: whereArgs);
 
     return List.generate(maps.length, (i) {
       Map<String, dynamic> messageMap = maps[i];
-      // messageMap['sender'] = json.decode(messageMap['sender']);
+      return ChatMessage.fromJson(
+          {...messageMap, 'sender': json.decode(messageMap['sender'])});
+    });
+  }
+
+  Future<List<ChatMessage>> getRelatedMessages(String uid) async {
+    Database _database = await _getDb();
+
+    final List<Map<String, dynamic>> maps = await _database.query('messages',
+        where: 'receiverId = ? or sender like ?',
+        whereArgs: [uid, '%"id":"$uid"%']);
+    return List.generate(maps.length, (i) {
+      Map<String, dynamic> messageMap = maps[i];
       return ChatMessage.fromJson(
           {...messageMap, 'sender': json.decode(messageMap['sender'])});
     });
@@ -88,14 +122,14 @@ class ChatClient {
       insertMessage(ChatMessage(
           id: id.toString(),
           type: 1,
-          text: "I miss you so much",
+          text: "Hello",
           sender: User(
               id: 'user$id',
               avatar:
                   'https://img.alicdn.com/tfs/TB1U0jFmCR26e4jSZFEXXbwuXXa-320-319.jpg',
               name: 'XXX'),
-          receiverId: "klmklm",
-          time: 1602757396232,
+          receiverId: "klmklm2",
+          time: 1602757698732,
           haveRead: "n"));
     });
   }

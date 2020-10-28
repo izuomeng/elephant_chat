@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         lazy: false,
         create: (context) async {
           return LoginUserNotifier(
-              id: 'klmklm',
+              id: 'klmklm2',
               avatar:
                   'https://img.alicdn.com/tfs/TB1S7v7Y4v1gK0jSZFFXXb0sXXa-190-183.jpg',
               name: '克拉默');
