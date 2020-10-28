@@ -35,7 +35,7 @@ class _ChatPageState extends State<ChatPage> {
     super.didChangeDependencies();
     chatClient.registerMessageHook(handleReceiveMessage);
     await _fetchChatList();
-    _scrollController.jumpTo(10000000);
+    _scrollToBottom();
   }
 
   @override
@@ -44,8 +44,21 @@ class _ChatPageState extends State<ChatPage> {
     chatClient.unregisterMessageHook(handleReceiveMessage);
   }
 
-  void handleReceiveMessage(ChatMessage message) {
-    _fetchChatList();
+  void _scrollToBottom({bool hasAnimation = false}) {
+    Timer(Duration(milliseconds: 100), () {
+      double y = _scrollController.position.maxScrollExtent;
+      if (hasAnimation) {
+        _scrollController.animateTo(y,
+            curve: Curves.easeInOut, duration: Duration(milliseconds: 300));
+      } else {
+        _scrollController.jumpTo(y);
+      }
+    });
+  }
+
+  Future<void> handleReceiveMessage(ChatMessage message) async {
+    await _fetchChatList();
+    _scrollToBottom(hasAnimation: true);
   }
 
   Future<void> _fetchChatList() async {
@@ -68,24 +81,29 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: _buildAppbar(),
       body: _buildChatList(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ChatMessage chatMessage = ChatMessage(
-              id: EleUtils.generateId(),
-              type: 1,
-              sender: User(
-                  id: _loginUser.id,
-                  avatar: _loginUser.avatar,
-                  name: _loginUser.name),
-              text: 'xxxxx',
-              time: DateTime.now().millisecondsSinceEpoch,
-              haveRead: 'n',
-              receiverId: widget.chatId);
-          chatClient.sendMessage(SocketMessage(100, chatMessage));
-        },
-        child: Icon(Icons.send),
-      ),
+      bottomNavigationBar: SafeArea(
+          minimum: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(28)),
+                boxShadow: [
+                  BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.08),
+                      blurRadius: 30,
+                      offset: Offset(0, 10))
+                ]),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: _sendMessage,
+                  color: Color(0xffA9B2C7),
+                )
+              ],
+            ),
+          )),
     );
   }
 
@@ -158,7 +176,7 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               Container(
                 constraints: BoxConstraints(maxWidth: bubbleWidth),
-                margin: EdgeInsets.only(left: 12, right: 12, top: 12),
+                margin: EdgeInsets.only(left: 16, right: 16, top: 16),
                 // child: Text(chatMessage.text),
                 child: isFromFriend
                     ? ChatBubble.friend(chatMessage.text)
@@ -169,5 +187,20 @@ class _ChatPageState extends State<ChatPage> {
                 isFromFriend ? MainAxisAlignment.start : MainAxisAlignment.end,
           );
         });
+  }
+
+  _sendMessage() {
+    ChatMessage chatMessage = ChatMessage(
+        id: EleUtils.generateId(),
+        type: 1,
+        sender: User(
+            id: _loginUser.id,
+            avatar: _loginUser.avatar,
+            name: _loginUser.name),
+        text: 'xxxxx',
+        time: DateTime.now().millisecondsSinceEpoch,
+        haveRead: 'n',
+        receiverId: widget.chatId);
+    chatClient.sendMessage(SocketMessage(100, chatMessage));
   }
 }
