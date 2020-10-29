@@ -11,6 +11,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:web_socket_channel/io.dart';
 
+enum ChatOrder { desc, asc }
+
 class ChatClient {
   Database _db;
   IOWebSocketChannel _channel;
@@ -40,7 +42,6 @@ class ChatClient {
   }
 
   void sendMessage(SocketMessage message) {
-    // ws.send('{"type":100,"content":{"id":"788hjsa07j9","type":1,"text":"I miss you","receiverId":"klmklm","time":1603159279916,"haveRead":"n","sender":{"id":"2i2a6451agh","avatar":"https://img.alicdn.com/tfs/TB1I0J2ZbY1gK0jSZTEXXXDQVXa-661-647.jpg","name":"克拉默卡拉曼"}}}');
     String messageJson = json.encode(message);
     _channel.sink.add(messageJson);
   }
@@ -75,7 +76,9 @@ class ChatClient {
   }
 
   Future<List<ChatMessage>> getMessages(
-      {String receiverId, String senderId}) async {
+      {String receiverId,
+      String senderId,
+      ChatOrder order = ChatOrder.asc}) async {
     Database _database = await _getDb();
     String where;
     List<String> whereArgs;
@@ -94,8 +97,10 @@ class ChatClient {
       whereArgs = [];
     }
 
-    final List<Map<String, dynamic>> maps =
-        await _database.query('messages', where: where, whereArgs: whereArgs);
+    final List<Map<String, dynamic>> maps = await _database.query('messages',
+        where: where,
+        whereArgs: whereArgs,
+        orderBy: 'time ${order.toString().substring(10)}');
 
     return List.generate(maps.length, (i) {
       Map<String, dynamic> messageMap = maps[i];
@@ -104,17 +109,26 @@ class ChatClient {
     });
   }
 
-  Future<List<ChatMessage>> getRelatedMessages(String uid) async {
+  Future<List<ChatMessage>> getRelatedMessages(String uid,
+      {ChatOrder order = ChatOrder.asc, int limit}) async {
     Database _database = await _getDb();
 
     final List<Map<String, dynamic>> maps = await _database.query('messages',
         where: 'receiverId = ? or sender like ?',
-        whereArgs: [uid, '%"id":"$uid"%']);
+        whereArgs: [uid, '%"id":"$uid"%'],
+        orderBy: 'time ${order.toString().substring(10)}',
+        limit: limit);
     return List.generate(maps.length, (i) {
       Map<String, dynamic> messageMap = maps[i];
       return ChatMessage.fromJson(
           {...messageMap, 'sender': json.decode(messageMap['sender'])});
     });
+  }
+
+  Future<ChatMessage> getNewestRelatedMessage(String uid) async {
+    List<ChatMessage> messageList =
+        await getRelatedMessages(uid, order: ChatOrder.desc, limit: 1);
+    return messageList.first;
   }
 
   Future<void> insertMockData() async {
@@ -134,26 +148,40 @@ class ChatClient {
     });
   }
 
+  Future<User> getUserById(String uid) async {
+    return User(
+        id: uid,
+        avatar:
+            'https://gw.alicdn.com/tfs/TB1Bo0ooDM11u4jSZPxXXahcXXa-300-300.jpg',
+        name: 'Michael Landis');
+  }
+
   Future<List<ChatSession>> getConversationList(String userId) async {
-    final List<ChatMessage> chatMessageList =
-        await getMessages(receiverId: userId);
+    final List<ChatMessage> receiveList = await getMessages(receiverId: userId);
+    final List<ChatMessage> sendList = await getMessages(senderId: userId);
     final List<ChatSession> chatSessionList = [];
-    final Map<String, List<ChatMessage>> midMap = {};
+    final Set<String> allchaters = Set()
+      ..addAll(receiveList.map((item) => item.sender.id))
+      ..addAll(sendList.map((item) => item.receiverId));
 
-    for (ChatMessage chatMessage in chatMessageList) {
-      if (midMap.containsKey(chatMessage.sender.id)) {
-        midMap[chatMessage.sender.id].add(chatMessage);
-      } else {
-        midMap[chatMessage.sender.id] = [chatMessage];
-      }
-    }
-
-    midMap.forEach((senderId, conversations) {
-      conversations.sort((left, right) => left.time - right.time);
+    // 并行
+    Iterable<Future<void>> futures = allchaters.map((chaterId) async {
+      List<ChatMessage> conversations = await getRelatedMessages(chaterId);
       ChatMessage newestMessage = conversations.last;
-      int unreadCnt =
-          conversations.where((item) => item.haveRead == 'n').length;
-      User sender = newestMessage.sender;
+      // senderChatList可能为空，为空表示对方没说过话
+      List<ChatMessage> senderChatList =
+          List.from(conversations.where((item) => item.sender.id == chaterId));
+      int unreadCnt;
+      User sender;
+
+      if (senderChatList.isEmpty) {
+        unreadCnt = 0;
+        sender = await getUserById(chaterId);
+      } else {
+        unreadCnt = senderChatList.where((item) => item.haveRead == 'n').length;
+
+        sender = senderChatList.last.sender;
+      }
 
       chatSessionList.add(ChatSession(
           id: sender.id,
@@ -164,6 +192,8 @@ class ChatClient {
           lastMessageTime: newestMessage.time,
           unreadCnt: unreadCnt));
     });
+
+    await Future.wait(futures);
 
     return chatSessionList;
   }

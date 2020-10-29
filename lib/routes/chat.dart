@@ -28,13 +28,22 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> _chatList = [];
   LoginUserNotifier _loginUser;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _textController = TextEditingController();
 
   @override
-  void didChangeDependencies() async {
+  void initState() {
+    super.initState();
+    (() async {
+      chatClient.registerMessageHook(handleReceiveMessage);
+      await _fetchChatList();
+      _scrollToBottom();
+    })();
+  }
+
+  @override
+  void didChangeDependencies() {
     super.didChangeDependencies();
-    chatClient.registerMessageHook(handleReceiveMessage);
-    await _fetchChatList();
     _scrollToBottom();
   }
 
@@ -42,10 +51,15 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     super.dispose();
     chatClient.unregisterMessageHook(handleReceiveMessage);
+    // EleUtils.hideKeyboard(context);
+    _scrollController.dispose();
   }
 
   void _scrollToBottom({bool hasAnimation = false}) {
     Timer(Duration(milliseconds: 100), () {
+      if (!_scrollController.hasClients) {
+        return;
+      }
       double y = _scrollController.position.maxScrollExtent;
       if (hasAnimation) {
         _scrollController.animateTo(y,
@@ -79,32 +93,13 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppbar(),
-      body: _buildChatList(),
-      bottomNavigationBar: SafeArea(
-          minimum: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(28)),
-                boxShadow: [
-                  BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, 0.08),
-                      blurRadius: 30,
-                      offset: Offset(0, 10))
-                ]),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: _sendMessage,
-                  color: Color(0xffA9B2C7),
-                )
-              ],
-            ),
-          )),
-    );
+        appBar: _buildAppbar(),
+        body: GestureDetector(
+          onTap: () => EleUtils.hideKeyboard(context),
+          child: Column(
+            children: [Expanded(child: _buildChatList()), _buildInputArea()],
+          ),
+        ));
   }
 
   Widget _buildAppbar() {
@@ -176,7 +171,7 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               Container(
                 constraints: BoxConstraints(maxWidth: bubbleWidth),
-                margin: EdgeInsets.only(left: 16, right: 16, top: 16),
+                margin: EdgeInsets.only(left: 26, right: 26, top: 16),
                 // child: Text(chatMessage.text),
                 child: isFromFriend
                     ? ChatBubble.friend(chatMessage.text)
@@ -189,7 +184,53 @@ class _ChatPageState extends State<ChatPage> {
         });
   }
 
+  Widget _buildInputArea() {
+    return SafeArea(
+        minimum: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(28)),
+              boxShadow: [
+                BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.08),
+                    blurRadius: 30,
+                    offset: Offset(0, 10))
+              ]),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 12,
+              ),
+              Expanded(
+                  flex: 1,
+                  child: TextField(
+                    controller: _textController,
+                    decoration: InputDecoration(
+                        hintText: "Type something",
+                        hintStyle: TextStyle(color: Color(0xffC6CCD8)),
+                        border:
+                            UnderlineInputBorder(borderSide: BorderSide.none)),
+                    textInputAction: TextInputAction.send,
+                    onEditingComplete: _sendMessage,
+                  )),
+              IconButton(
+                icon: Icon(Icons.send),
+                onPressed: _sendMessage,
+                color: Color(0xffA9B2C7),
+              )
+            ],
+          ),
+        ));
+  }
+
   _sendMessage() {
+    String text = _textController.text;
+    if (text.isEmpty) {
+      return;
+    }
     ChatMessage chatMessage = ChatMessage(
         id: EleUtils.generateId(),
         type: 1,
@@ -197,10 +238,11 @@ class _ChatPageState extends State<ChatPage> {
             id: _loginUser.id,
             avatar: _loginUser.avatar,
             name: _loginUser.name),
-        text: 'xxxxx',
+        text: text,
         time: DateTime.now().millisecondsSinceEpoch,
         haveRead: 'n',
         receiverId: widget.chatId);
     chatClient.sendMessage(SocketMessage(100, chatMessage));
+    _textController.clear();
   }
 }

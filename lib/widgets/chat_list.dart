@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:ui';
 import 'package:elephant_chat/common/chat_client.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
@@ -155,7 +156,12 @@ class _ChatListState extends State<ChatList> {
     LoginUserNotifier loginUser = context.read<LoginUserNotifier>();
 
     List<ChatSession> chatList =
-        await chatClient.getConversationList(loginUser.id); // 加一个占位符，渲染标题
+        await chatClient.getConversationList(loginUser.id);
+
+    // 新消息排在最前面
+    chatList
+        .sort((left, right) => right.lastMessageTime - left.lastMessageTime);
+    // 加一个占位符，渲染标题
     setState(() {
       _chatList = [null, ...chatList];
     });
