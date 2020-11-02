@@ -152,13 +152,11 @@ class ChatClient {
 
   Future<User> getUserById(String uid) async {
     var res = await request.get('/user/$uid');
-    print(res.data);
-    return User(
-        id: uid,
-        avatar:
-            'https://gw.alicdn.com/tfs/TB1Bo0ooDM11u4jSZPxXXahcXXa-300-300.jpg',
-        name: 'Michael Landis',
-        phone: '123456');
+
+    if (res.data is Map) {
+      return User.fromJson(res.data);
+    }
+    throw ('user $uid not exist');
   }
 
   Future<List<ChatSession>> getConversationList(String userId) async {

@@ -21,6 +21,10 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    Widget placeHolder = Center(
+      child: Text('Placeholder'),
+    );
+
     return Scaffold(
       bottomNavigationBar: FancyTabBar(
           tablist: widget.tabList,
@@ -31,7 +35,7 @@ class _HomeState extends State<Home> {
             });
           }),
       body: IndexedStack(
-        children: [ChatList(), ChatList(), ChatList(), DataBaseUI()],
+        children: [placeHolder, ChatList(), placeHolder, DataBaseUI()],
         index: _currentTab,
       ),
     );

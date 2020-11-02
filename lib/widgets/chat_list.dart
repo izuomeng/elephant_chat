@@ -23,7 +23,6 @@ class _ChatListState extends State<ChatList> {
   @override
   void initState() {
     super.initState();
-
     Timer.run(() {
       _fetchChatList(context);
       chatClient.registerMessageHook((message) {
@@ -154,7 +153,7 @@ class _ChatListState extends State<ChatList> {
   }
 
   void _fetchChatList(BuildContext context) async {
-    // chatClient.insertMockData();
+    print('_fetchChatList');
     LoginUserNotifier loginUser = context.read<LoginUserNotifier>();
 
     List<ChatSession> chatList =
