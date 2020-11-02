@@ -237,7 +237,8 @@ class _ChatPageState extends State<ChatPage> {
         sender: User(
             id: _loginUser.id,
             avatar: _loginUser.avatar,
-            name: _loginUser.name),
+            name: _loginUser.name,
+            phone: _loginUser.phone),
         text: text,
         time: DateTime.now().millisecondsSinceEpoch,
         haveRead: 'n',

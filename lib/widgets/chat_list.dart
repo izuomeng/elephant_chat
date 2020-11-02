@@ -118,7 +118,9 @@ class _ChatListState extends State<ChatList> {
                         style: TextStyle(fontSize: 20, color: Colors.black45),
                       ),
                       Text(
-                        '5:46 PM',
+                        DateFormat.jm().format(
+                            DateTime.fromMillisecondsSinceEpoch(
+                                chatSession.lastMessageTime)),
                         style: TextStyle(fontSize: 12, color: Colors.black45),
                       )
                     ])),

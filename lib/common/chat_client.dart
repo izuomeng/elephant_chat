@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:math';
+import 'package:elephant_chat/common/request.dart';
 import 'package:elephant_chat/entities/chat_message.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
 import 'package:elephant_chat/entities/socket_message.dart';
@@ -141,7 +142,8 @@ class ChatClient {
               id: 'user$id',
               avatar:
                   'https://img.alicdn.com/tfs/TB1U0jFmCR26e4jSZFEXXbwuXXa-320-319.jpg',
-              name: 'XXX'),
+              name: 'XXX',
+              phone: '1234556'),
           receiverId: "klmklm2",
           time: 1602757698732,
           haveRead: "n"));
@@ -149,11 +151,14 @@ class ChatClient {
   }
 
   Future<User> getUserById(String uid) async {
+    var res = await request.get('/user/$uid');
+    print(res.data);
     return User(
         id: uid,
         avatar:
             'https://gw.alicdn.com/tfs/TB1Bo0ooDM11u4jSZPxXXahcXXa-300-300.jpg',
-        name: 'Michael Landis');
+        name: 'Michael Landis',
+        phone: '123456');
   }
 
   Future<List<ChatSession>> getConversationList(String userId) async {

@@ -20,7 +20,8 @@ class MyApp extends StatelessWidget {
               id: 'klmklm2',
               avatar:
                   'https://img.alicdn.com/tfs/TB1S7v7Y4v1gK0jSZFFXXb0sXXa-190-183.jpg',
-              name: '克拉默');
+              name: '克拉默',
+              phone: '111111');
         },
         child: MaterialApp(
           title: 'ElephantChat',
