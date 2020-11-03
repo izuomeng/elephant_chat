@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:elephant_chat/common/utils.dart';
+import 'package:elephant_chat/widgets/count_down.dart';
 import 'package:flutter/material.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
@@ -124,6 +125,8 @@ class ConfirmationCodePage extends StatefulWidget {
 }
 
 class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
+  bool isCountDownDone = false;
+
   @override
   void initState() {
     super.initState();
@@ -134,6 +137,9 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
 
   @override
   Widget build(BuildContext context) {
+    Color primaryColor = Theme.of(context).primaryColor;
+    double sreenWidth = MediaQuery.of(context).size.width;
+
     return GestureDetector(
       onTap: () => EleUtils.hideKeyboard(context),
       child: Scaffold(
@@ -180,6 +186,45 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: isCountDownDone
+            ? FlatButton(
+                onPressed: () {
+                  setState(() {
+                    isCountDownDone = false;
+                  });
+                },
+                color: primaryColor,
+                minWidth: sreenWidth - 64,
+                colorBrightness: Brightness.dark,
+                padding: EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0)),
+                child: Text('Send code'),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Resend code in '),
+                  SizedBox(
+                    width: 20,
+                    child: Align(
+                      heightFactor: 1,
+                      alignment: Alignment.center,
+                      child: CountDown(
+                        start: 59,
+                        autoStart: true,
+                        onFinish: () {
+                          setState(() {
+                            isCountDownDone = true;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Text(' seconds')
+                ],
+              ),
       ),
     );
   }
