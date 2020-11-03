@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/widgets/count_down.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+
+import 'home.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -125,7 +128,8 @@ class ConfirmationCodePage extends StatefulWidget {
 }
 
 class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
-  bool isCountDownDone = false;
+  bool _isCountDownDone = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -133,6 +137,18 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
     Timer.run(() {
       SmsAutoFill().listenForCode;
     });
+  }
+
+  void _handleCodeChange(String code) {
+    if (code == '1234') {
+      setState(() {
+        _isLoading = true;
+      });
+      Timer(Duration(seconds: 2), () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (BuildContext context) => Home()));
+      });
+    }
   }
 
   @override
@@ -182,49 +198,54 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
                 decoration: const UnderlineDecoration(
                     colorBuilder: FixedColorBuilder(Colors.black),
                     textStyle: TextStyle(color: Colors.black, fontSize: 24)),
+                onCodeChanged: _handleCodeChange,
               )
             ],
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: isCountDownDone
-            ? FlatButton(
-                onPressed: () {
-                  setState(() {
-                    isCountDownDone = false;
-                  });
-                },
-                color: primaryColor,
-                minWidth: sreenWidth - 64,
-                colorBrightness: Brightness.dark,
-                padding: EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0)),
-                child: Text('Send code'),
+        floatingActionButton: _isLoading
+            ? CupertinoActivityIndicator(
+                radius: 15,
               )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Resend code in '),
-                  SizedBox(
-                    width: 20,
-                    child: Align(
-                      heightFactor: 1,
-                      alignment: Alignment.center,
-                      child: CountDown(
-                        start: 59,
-                        autoStart: true,
-                        onFinish: () {
-                          setState(() {
-                            isCountDownDone = true;
-                          });
-                        },
+            : _isCountDownDone
+                ? FlatButton(
+                    onPressed: () {
+                      setState(() {
+                        _isCountDownDone = false;
+                      });
+                    },
+                    color: primaryColor,
+                    minWidth: sreenWidth - 64,
+                    colorBrightness: Brightness.dark,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0)),
+                    child: Text('Send code'),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Resend code in '),
+                      SizedBox(
+                        width: 20,
+                        child: Align(
+                          heightFactor: 1,
+                          alignment: Alignment.center,
+                          child: CountDown(
+                            start: 59,
+                            autoStart: true,
+                            onFinish: () {
+                              setState(() {
+                                _isCountDownDone = true;
+                              });
+                            },
+                          ),
+                        ),
                       ),
-                    ),
+                      Text(' seconds')
+                    ],
                   ),
-                  Text(' seconds')
-                ],
-              ),
       ),
     );
   }
