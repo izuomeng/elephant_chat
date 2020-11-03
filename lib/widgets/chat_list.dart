@@ -153,7 +153,6 @@ class _ChatListState extends State<ChatList> {
   }
 
   void _fetchChatList(BuildContext context) async {
-    print('_fetchChatList');
     LoginUserNotifier loginUser = context.read<LoginUserNotifier>();
 
     List<ChatSession> chatList =

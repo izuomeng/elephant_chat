@@ -1,6 +1,7 @@
 // import 'package:elephant_chat/widgets/animated_tab_bar.dart';
 import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/entities/user.dart';
+import 'package:elephant_chat/routes/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './routes/home.dart';
@@ -26,7 +27,8 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'ElephantChat',
           theme: ThemeData(primaryColor: primaryColor, backgroundColor: bodyBg),
-          home: Home(),
+          // home: Home(),
+          home: Login(),
         ));
   }
 }
