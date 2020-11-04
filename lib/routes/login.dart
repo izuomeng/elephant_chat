@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:elephant_chat/common/utils.dart';
+import 'package:elephant_chat/entities/user.dart';
 import 'package:elephant_chat/widgets/count_down.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +131,7 @@ class ConfirmationCodePage extends StatefulWidget {
 class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
   bool _isCountDownDone = false;
   bool _isLoading = false;
+  String _cuurentCode = '';
 
   @override
   void initState() {
@@ -140,13 +142,24 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
   }
 
   void _handleCodeChange(String code) {
+    setState(() {
+      _cuurentCode = code;
+    });
     if (code == '1234') {
       setState(() {
         _isLoading = true;
       });
-      Timer(Duration(seconds: 2), () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (BuildContext context) => Home()));
+      // TODO: 远程接口请求用户信息
+      Timer(Duration(seconds: 2), () async {
+        User user = User(
+            id: 'klmklm2',
+            avatar:
+                'https://img.alicdn.com/tfs/TB1S7v7Y4v1gK0jSZFFXXb0sXXa-190-183.jpg',
+            name: '克拉默',
+            phone: '11122233344');
+
+        await EleUtils.setLoginUser(user);
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       });
     }
   }
@@ -195,6 +208,7 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
               ),
               PinFieldAutoFill(
                 codeLength: 4,
+                currentCode: _cuurentCode,
                 decoration: const UnderlineDecoration(
                     colorBuilder: FixedColorBuilder(Colors.black),
                     textStyle: TextStyle(color: Colors.black, fontSize: 24)),
@@ -228,7 +242,7 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
                     children: [
                       Text('Resend code in '),
                       SizedBox(
-                        width: 20,
+                        width: 24,
                         child: Align(
                           heightFactor: 1,
                           alignment: Alignment.center,

@@ -1,9 +1,14 @@
+import 'dart:async';
+
+import 'package:elephant_chat/common/chat_client.dart';
+import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/entities/tab_item.dart';
+import 'package:elephant_chat/entities/user.dart';
 import 'package:elephant_chat/routes/database_ui.dart';
-import 'package:elephant_chat/routes/login.dart';
 import 'package:elephant_chat/widgets/chat_list.dart';
 import 'package:elephant_chat/widgets/fancy_tab_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   final List<TabItem> tabList = [
@@ -19,6 +24,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _currentTab = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    EleUtils.getLoginUser().then((user) => {chatClient.init(uid: user.id)});
+  }
 
   @override
   Widget build(BuildContext context) {

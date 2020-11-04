@@ -27,7 +27,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> _chatList = [];
-  LoginUserNotifier _loginUser;
+  User _loginUser;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
 
@@ -78,15 +78,17 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _fetchChatList() async {
     List<ChatMessage> chatList =
         await chatClient.getRelatedMessages(widget.chatId);
+
+    if (_loginUser is! User) {
+      User loginUser = await EleUtils.getLoginUser();
+
+      setState(() {
+        _loginUser = loginUser;
+      });
+    }
+
     setState(() {
       _chatList = chatList;
-
-      if (_loginUser is LoginUserNotifier) {
-        return;
-      }
-      LoginUserNotifier loginUser =
-          Provider.of<LoginUserNotifier>(context, listen: false);
-      _loginUser = loginUser;
     });
   }
 

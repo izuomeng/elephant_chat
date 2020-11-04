@@ -19,19 +19,21 @@ class ChatClient {
   IOWebSocketChannel _channel;
   final List<void Function(ChatMessage)> _messageEventHooks = [];
 
-  ChatClient() {
-    _channel = IOWebSocketChannel.connect('ws://localhost:3001?uid=klmklm2');
-    _channel.stream.listen((message) async {
-      Map<String, dynamic> map = json.decode(message);
-      SocketMessage socketMessage = SocketMessage.fromJson(map);
-      if (socketMessage.type == 101) {
-        ChatMessage chatMessage = ChatMessage.fromJson(socketMessage.content);
-        await chatClient.insertMessage(chatMessage);
-        _messageEventHooks.forEach((hook) {
-          hook(chatMessage);
-        });
-      }
-    });
+  void init({@required String uid}) {
+    _channel = IOWebSocketChannel.connect('ws://localhost:3001?uid=$uid');
+    _channel.stream.listen(_handleMessage);
+  }
+
+  void _handleMessage(dynamic message) async {
+    Map<String, dynamic> map = json.decode(message);
+    SocketMessage socketMessage = SocketMessage.fromJson(map);
+    if (socketMessage.type == 101) {
+      ChatMessage chatMessage = ChatMessage.fromJson(socketMessage.content);
+      await chatClient.insertMessage(chatMessage);
+      _messageEventHooks.forEach((hook) {
+        hook(chatMessage);
+      });
+    }
   }
 
   void registerMessageHook(void Function(ChatMessage) hook) {
@@ -44,7 +46,7 @@ class ChatClient {
 
   void sendMessage(SocketMessage message) {
     String messageJson = json.encode(message);
-    _channel.sink.add(messageJson);
+    _channel?.sink?.add(messageJson);
   }
 
   Future<Database> _getDb() async {

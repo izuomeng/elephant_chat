@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 import 'package:elephant_chat/common/chat_client.dart';
+import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
 import 'package:elephant_chat/entities/user.dart';
 import 'package:elephant_chat/routes/chat.dart';
@@ -153,7 +154,7 @@ class _ChatListState extends State<ChatList> {
   }
 
   void _fetchChatList(BuildContext context) async {
-    LoginUserNotifier loginUser = context.read<LoginUserNotifier>();
+    User loginUser = await EleUtils.getLoginUser();
 
     List<ChatSession> chatList =
         await chatClient.getConversationList(loginUser.id);

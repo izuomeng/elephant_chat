@@ -28,23 +28,23 @@ class UserSetting {
   const UserSetting({this.hasNotification});
 }
 
-// 本机登录用户
-class LoginUserNotifier extends ChangeNotifier {
-  final String id;
-  final String avatar;
-  final String name;
-  final String phone;
-  final UserSetting userSetting;
+// // 本机登录用户
+// class LoginUserNotifier extends ChangeNotifier {
+//   final String id;
+//   final String avatar;
+//   final String name;
+//   final String phone;
+//   final UserSetting userSetting;
 
-  LoginUserNotifier(
-      {this.userSetting = const UserSetting(hasNotification: 'y'),
-      @required this.id,
-      @required this.avatar,
-      @required this.name,
-      @required this.phone});
+//   LoginUserNotifier(
+//       {this.userSetting = const UserSetting(hasNotification: 'y'),
+//       @required this.id,
+//       @required this.avatar,
+//       @required this.name,
+//       @required this.phone});
 
-  set id(String value) {
-    id = value;
-    notifyListeners();
-  }
-}
+//   set id(String value) {
+//     id = value;
+//     notifyListeners();
+//   }
+// }
