@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:ui';
 import 'package:elephant_chat/common/chat_client.dart';
 import 'package:elephant_chat/common/utils.dart';
@@ -8,8 +7,6 @@ import 'package:elephant_chat/entities/user.dart';
 import 'package:elephant_chat/routes/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import 'package:provider/provider.dart';
 
 class ChatList extends StatefulWidget {
   ChatList({Key key}) : super(key: key);

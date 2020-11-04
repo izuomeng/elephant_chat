@@ -6,11 +6,9 @@ import 'package:elephant_chat/entities/user.dart';
 import 'package:elephant_chat/routes/login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import './routes/home.dart';
 
 void main() {
-  SharedPreferences.setMockInitialValues({});
   runApp(MyApp());
 }
 

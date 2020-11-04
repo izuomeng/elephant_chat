@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:math';
+import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/common/request.dart';
 import 'package:elephant_chat/entities/chat_message.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
@@ -20,7 +21,7 @@ class ChatClient {
   final List<void Function(ChatMessage)> _messageEventHooks = [];
 
   void init({@required String uid}) {
-    _channel = IOWebSocketChannel.connect('ws://localhost:3001?uid=$uid');
+    _channel = IOWebSocketChannel.connect('ws://$WS_HOST?uid=$uid');
     _channel.stream.listen(_handleMessage);
   }
 

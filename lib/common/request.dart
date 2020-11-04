@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:elephant_chat/common/consts.dart';
 
 BaseOptions options = new BaseOptions(
-  baseUrl: "http://localhost:3000",
+  baseUrl: "http://$HTTP_HOST",
   connectTimeout: 10000,
   receiveTimeout: 10000,
 );
