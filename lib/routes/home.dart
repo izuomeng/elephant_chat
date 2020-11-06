@@ -1,6 +1,7 @@
 import 'package:elephant_chat/common/chat_client.dart';
 import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/entities/tab_item.dart';
+import 'package:elephant_chat/routes/contacts.dart';
 import 'package:elephant_chat/routes/database_ui.dart';
 import 'package:elephant_chat/widgets/chat_list.dart';
 import 'package:elephant_chat/widgets/fancy_tab_bar.dart';
@@ -45,7 +46,7 @@ class _HomeState extends State<Home> {
             });
           }),
       body: IndexedStack(
-        children: [placeHolder, ChatList(), placeHolder, DataBaseUI()],
+        children: [Contacts(), ChatList(), placeHolder, DataBaseUI()],
         index: _currentTab,
       ),
     );

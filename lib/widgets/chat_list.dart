@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:elephant_chat/common/chat_client.dart';
+import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
 import 'package:elephant_chat/entities/user.dart';
 import 'package:elephant_chat/routes/chat.dart';
+import 'package:elephant_chat/widgets/light_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -17,6 +19,7 @@ class ChatList extends StatefulWidget {
 
 class _ChatListState extends State<ChatList> {
   List<ChatSession> _chatList = [];
+  User _loginUser;
 
   @override
   void initState() {
@@ -46,7 +49,7 @@ class _ChatListState extends State<ChatList> {
         title: CircleAvatar(
           radius: 18,
           backgroundImage: NetworkImage(
-            'https://img.alicdn.com/tfs/TB1S7v7Y4v1gK0jSZFFXXb0sXXa-190-183.jpg',
+            _loginUser?.avatar ?? DEFAULT_AVATAR_URL,
           ),
         ),
         centerTitle: true,
@@ -69,12 +72,8 @@ class _ChatListState extends State<ChatList> {
         itemCount: _chatList.length,
         itemBuilder: (context, index) {
           if (index == 0) {
-            return Padding(
-              child: Text(
-                'Chats',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
-              padding: EdgeInsets.all(20),
+            return BigTitle(
+              title: 'Chats',
             );
           }
 
@@ -151,7 +150,7 @@ class _ChatListState extends State<ChatList> {
   }
 
   void _fetchChatList(BuildContext context) async {
-    User loginUser = await EleUtils.getLoginUser();
+    User loginUser = _loginUser ?? await EleUtils.getLoginUser();
 
     List<ChatSession> chatList =
         await chatClient.getConversationList(loginUser.id);
@@ -162,6 +161,9 @@ class _ChatListState extends State<ChatList> {
     // 加一个占位符，渲染标题
     setState(() {
       _chatList = [null, ...chatList];
+      if (_loginUser is! User) {
+        _loginUser = loginUser;
+      }
     });
   }
 

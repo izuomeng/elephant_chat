@@ -7,6 +7,7 @@ import 'package:elephant_chat/entities/chat_message.dart';
 import 'package:elephant_chat/entities/chat_session.dart';
 import 'package:elephant_chat/entities/socket_message.dart';
 import 'package:elephant_chat/entities/user.dart';
+import 'package:elephant_chat/routes/test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sqflite_manager/flutter_sqflite_manager.dart';
 import 'package:path/path.dart';
@@ -208,7 +209,7 @@ class ChatClient {
     Database _database = await _getDb();
     return SqfliteManager(
       database: _database,
-      child: Text(''),
+      child: TestFlutter(),
       rowsPerPage: 8,
     );
   }
