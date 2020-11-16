@@ -177,7 +177,7 @@ class ChatClient {
       ChatMessage newestMessage = conversations.last;
       // senderChatList可能为空，为空表示对方没说过话
       List<ChatMessage> senderChatList =
-          List.from(conversations.where((item) => item.sender.id == chaterId));
+          conversations.where((item) => item.sender.id == chaterId).toList();
       int unreadCnt;
       User sender;
 
