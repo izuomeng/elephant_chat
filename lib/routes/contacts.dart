@@ -31,7 +31,7 @@ class _ContactsState extends State<Contacts> {
     List<User> contactList = [];
 
     res.data.forEach((item) {
-      contactList.add(User.fromJson(item));
+      contactList.add(User.fromJson(item['friend']));
     });
 
     _buildContactList(contactList);

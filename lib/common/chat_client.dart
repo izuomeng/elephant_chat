@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:math';
 import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/common/request.dart';
 import 'package:elephant_chat/entities/chat_message.dart';
@@ -161,6 +159,15 @@ class ChatClient {
       return User.fromJson(res.data);
     }
     throw ('user $uid not exist');
+  }
+
+  Future<User> getUserByPhone(String number) async {
+    var res = await request.get('/user/phone/$number');
+
+    if (res.data is Map) {
+      return User.fromJson(res.data);
+    }
+    throw ('user with number $number not exist');
   }
 
   Future<List<ChatSession>> getConversationList(String userId) async {

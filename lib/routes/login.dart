@@ -1,13 +1,13 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:elephant_chat/common/chat_client.dart';
 import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/entities/user.dart';
 import 'package:elephant_chat/widgets/count_down.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sms_autofill/sms_autofill.dart';
-
-import 'home.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -149,17 +149,20 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
       setState(() {
         _isLoading = true;
       });
-      // TODO: 远程接口请求用户信息
       Timer(Duration(seconds: 2), () async {
-        User user = User(
-            id: 'klmklm2',
-            avatar:
-                'https://img.alicdn.com/tfs/TB1S7v7Y4v1gK0jSZFFXXb0sXXa-190-183.jpg',
-            name: '克拉默',
-            phone: '11122233344');
+        User user =
+            await chatClient.getUserByPhone(widget.phoneNumber.substring(4));
+        // User user = User(
+        //     id: 'klmklm2',
+        //     avatar:
+        //         'https://img.alicdn.com/tfs/TB1S7v7Y4v1gK0jSZFFXXb0sXXa-190-183.jpg',
+        //     name: '克拉默',
+        //     phone: '11122233344');
 
-        await EleUtils.setLoginUser(user);
-        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        if (user is User) {
+          await EleUtils.setLoginUser(user);
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        } else {}
       });
     }
   }

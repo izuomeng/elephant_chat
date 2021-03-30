@@ -29,7 +29,7 @@ class ChatBubble extends StatelessWidget {
     return DefaultTextStyle(
         style: TextStyle(height: 1.5, fontSize: 14),
         child: Stack(
-          overflow: Overflow.visible,
+          clipBehavior: Clip.none,
           children: [
             Container(
               decoration: BoxDecoration(

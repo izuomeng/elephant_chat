@@ -25,7 +25,10 @@ class EleUtils {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String userJson = prefs.getString('user');
-      return User.fromJson(json.decode(userJson));
+      if (userJson.isNotEmpty) {
+        return User.fromJson(json.decode(userJson));
+      }
+      return null;
     } catch (e) {
       return null;
     }
@@ -35,6 +38,11 @@ class EleUtils {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userJson = json.encode(user);
     await prefs.setString('user', userJson);
+  }
+
+  static Future<void> clearLoginUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', '');
   }
 }
 

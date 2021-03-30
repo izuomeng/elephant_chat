@@ -41,7 +41,7 @@ class _AnimatedBottomBarState extends State<AnimatedBottomBar>
   }
 
   List<Widget> _buildBarItems() {
-    List<Widget> _barItems = List();
+    List<Widget> _barItems = [];
     for (int i = 0; i < widget.barItems.length; i++) {
       BarItem item = widget.barItems[i];
       bool isSelected = selectedBarIndex == i;
