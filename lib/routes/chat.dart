@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/entities/socket_message.dart';
 import 'package:elephant_chat/entities/user.dart';

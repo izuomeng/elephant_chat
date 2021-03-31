@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:elephant_chat/common/chat_client.dart';
 import 'package:elephant_chat/common/utils.dart';

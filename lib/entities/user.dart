@@ -23,7 +23,7 @@ class User {
 
 class UserSetting {
   final String hasNotification; // y: 开启通知 n: 关闭通知
-  // TODO: more
+  // TODO: 定义其他设置项
 
   const UserSetting({this.hasNotification});
 }

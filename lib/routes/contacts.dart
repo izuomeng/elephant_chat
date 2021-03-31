@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:elephant_chat/common/consts.dart';
 import 'package:elephant_chat/common/request.dart';
 import 'package:elephant_chat/common/utils.dart';
