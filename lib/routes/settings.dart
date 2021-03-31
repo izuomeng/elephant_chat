@@ -7,17 +7,16 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  _handleLogout() {
-    _showConfirmDialog(onOk: () {
+  _handleLogout() async {
+    final isConfirm = await _showConfirmDialog();
+    if (isConfirm) {
       EleUtils.clearLoginUser();
       Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-    }, onCancel: () {
-      print('cancle');
-    });
+    }
   }
 
-  Future<void> _showConfirmDialog({Function onOk, Function onCancel}) async {
-    return showDialog<void>(
+  Future<bool> _showConfirmDialog() async {
+    return showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
@@ -35,17 +34,13 @@ class _SettingsState extends State<Settings> {
             TextButton(
               child: Text('Cancel'),
               onPressed: () {
-                if (onCancel is Function) {
-                  onCancel();
-                }
+                Navigator.pop(context, false);
               },
             ),
             TextButton(
               child: Text('Yes'),
               onPressed: () {
-                if (onOk is Function) {
-                  onOk();
-                }
+                Navigator.pop(context, true);
               },
             ),
           ],

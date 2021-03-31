@@ -4,7 +4,6 @@ import 'package:elephant_chat/common/utils.dart';
 import 'package:elephant_chat/entities/socket_message.dart';
 import 'package:elephant_chat/entities/user.dart';
 import 'package:elephant_chat/widgets/chat_bubble.dart';
-import 'package:provider/provider.dart';
 import 'package:elephant_chat/common/chat_client.dart';
 import 'package:elephant_chat/entities/chat_message.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum VertexPoint { topLeft, topRight, bottomLeft, bottomRight }
+
 class ChatBubble extends StatelessWidget {
   static const _defaultBubbleColor = const Color(0xffEBECF2);
   static const _radius = const Radius.circular(8);
@@ -55,8 +57,6 @@ class ChatBubble extends StatelessWidget {
         ));
   }
 }
-
-enum VertexPoint { topLeft, topRight, bottomLeft, bottomRight }
 
 class TrianglePainter extends CustomPainter {
   final Color fillColor;

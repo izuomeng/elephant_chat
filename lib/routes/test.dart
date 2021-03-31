@@ -22,7 +22,7 @@ class _TestFlutterState extends State<TestFlutter> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(n.toString()),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Add'),
               onPressed: () {
                 setState(() {

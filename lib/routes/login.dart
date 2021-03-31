@@ -100,16 +100,23 @@ class _LoginState extends State<Login> {
               )),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FlatButton(
+          floatingActionButton: TextButton(
             onPressed: _isValidNumber ? _handleNext : null,
-            color: primaryColor,
-            disabledTextColor: Colors.black26,
-            disabledColor: Color(0xffF4F5F7),
-            minWidth: sreenWidth - 64,
-            colorBrightness: Brightness.dark,
-            padding: EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0)),
+            style: ButtonStyle(
+                backgroundColor: MaterialStateColor.resolveWith((states) =>
+                    states.contains(MaterialState.disabled)
+                        ? Color(0xffF4F5F7)
+                        : primaryColor),
+                foregroundColor: MaterialStateColor.resolveWith((states) =>
+                    states.contains(MaterialState.disabled)
+                        ? Colors.black26
+                        : Colors.white),
+                padding: MaterialStateProperty.all(
+                    EdgeInsets.symmetric(vertical: 16)),
+                minimumSize:
+                    MaterialStateProperty.all(Size(sreenWidth - 64, 0)),
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0)))),
             child: Text(
               'Next',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -162,7 +169,9 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
         if (user is User) {
           await EleUtils.setLoginUser(user);
           Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-        } else {}
+        } else {
+          // TODO: 注册用户
+        }
       });
     }
   }
@@ -226,18 +235,19 @@ class _ConfirmationCodePageState extends State<ConfirmationCodePage> {
                 radius: 15,
               )
             : _isCountDownDone
-                ? FlatButton(
+                ? TextButton(
                     onPressed: () {
                       setState(() {
                         _isCountDownDone = false;
                       });
                     },
-                    color: primaryColor,
-                    minWidth: sreenWidth - 64,
-                    colorBrightness: Brightness.dark,
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0)),
+                    style: TextButton.styleFrom(
+                        primary: Colors.white,
+                        backgroundColor: primaryColor,
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: Size(sreenWidth - 64, 0),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0))),
                     child: Text('Send code'),
                   )
                 : Row(
